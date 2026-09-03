@@ -1,0 +1,30 @@
+:host { --ink: #243832; --sage: #497568; --cream: #f7f3ea; --line: #dedbd2; }
+ion-content { --background: var(--cream); color: var(--ink); }
+ion-toolbar { --background: var(--cream); --color: var(--ink); padding-inline: clamp(8px, 4vw, 52px); }
+.center-state, .login-shell { min-height: 88vh; display: grid; place-items: center; padding: 24px; }
+.welcome-card { width: min(100%, 520px); text-align: center; padding: clamp(28px, 6vw, 58px); background: #fffdf8; border: 1px solid var(--line); border-radius: 28px; box-shadow: 0 24px 70px rgba(44, 63, 57, .09); }
+.mark { width: 62px; height: 62px; display: grid; place-items: center; margin: 0 auto 30px; border-radius: 50%; background: var(--sage); color: white; font: 500 30px Georgia, serif; }
+h1, h2 { font-family: Georgia, 'Times New Roman', serif; color: var(--ink); margin: 0; }
+h1 { font-size: clamp(34px, 5vw, 54px); line-height: 1.05; } h2 { font-size: 25px; }
+p { color: #60716b; line-height: 1.6; }
+.eyebrow { margin: 0 0 10px; color: var(--sage); font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.welcome-card > p:not(.eyebrow) { margin: 20px 0 30px; } .welcome-card small { display: block; margin-top: 18px; color: #7a8782; }
+ion-button { --background: var(--sage); --background-hover: #355e52; --border-radius: 12px; text-transform: none; font-weight: 650; }
+.app-shell { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 48px 0 80px; }
+.intro { display: flex; justify-content: space-between; align-items: center; margin-bottom: 34px; }
+.intro p:last-child { margin-bottom: 0; } .intro img { width: 54px; height: 54px; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 18px rgba(0,0,0,.1); }
+.workspace { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr); gap: 24px; }
+.calendar-card, .slots-card { background: #fffdf9; border: 1px solid var(--line); border-radius: 22px; padding: clamp(18px, 3vw, 32px); }
+.calendar-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; } .calendar-heading ion-button { --background: transparent; --color: var(--sage); }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); } .weekdays { margin-bottom: 12px; color: #88938f; font-size: 12px; font-weight: 700; text-align: center; text-transform: uppercase; }
+.days { gap: 7px; } .days button { position: relative; aspect-ratio: 1; border: 0; border-radius: 14px; background: transparent; color: var(--ink); font-size: 15px; cursor: pointer; }
+.days button:hover { background: #eef2ec; } .days button.outside { opacity: .25; } .days button.today span { border-bottom: 2px solid var(--sage); }
+.days button.selected { background: var(--sage); color: white; box-shadow: 0 7px 16px rgba(73,117,104,.25); }
+.days button i { position: absolute; width: 5px; height: 5px; bottom: 8px; left: calc(50% - 2px); border-radius: 50%; background: #d39b5f; }
+.section-heading { margin-bottom: 22px; } .section-heading h2 { text-transform: capitalize; }
+.slot-list { display: grid; gap: 10px; } .slot { width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 15px 16px; border: 1px solid var(--line); border-radius: 13px; background: white; color: var(--ink); text-align: left; }
+button.slot { cursor: pointer; } button.slot:hover { border-color: var(--sage); transform: translateY(-1px); } .slot span { font-weight: 750; } .slot small { color: #75837e; } .slot.booked { background: #f0ede7; } .slot ion-icon { color: var(--sage); }
+.empty { min-height: 230px; display: grid; place-items: center; align-content: center; text-align: center; color: #8b9792; } .empty ion-icon { font-size: 38px; } .empty.compact { min-height: 90px; }
+.availability-form { display: grid; gap: 14px; padding-bottom: 24px; margin-bottom: 22px; border-bottom: 1px solid var(--line); } .time-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+ion-input { --background: white; --padding-start: 12px; --padding-end: 12px; border: 1px solid var(--line); border-radius: 12px; }
+@media (max-width: 780px) { .workspace { grid-template-columns: 1fr; } .app-shell { padding-top: 28px; } .intro { align-items: flex-start; } }
