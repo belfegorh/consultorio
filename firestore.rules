@@ -1,0 +1,44 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isPsychologist() {
+      return signedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'psychologist';
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isPsychologist());
+      allow create: if signedIn() && request.auth.uid == userId
+        && request.resource.data.role == 'patient';
+      allow update: if signedIn() && request.auth.uid == userId
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.email == resource.data.email;
+      allow delete: if false;
+    }
+
+    match /slots/{slotId} {
+      allow read: if signedIn();
+      allow create: if isPsychologist()
+        && request.resource.data.status == 'available'
+        && request.resource.data.end > request.resource.data.start;
+      allow delete: if isPsychologist() && resource.data.status == 'available';
+      allow update: if isPsychologist()
+        || (signedIn()
+          && resource.data.status == 'available'
+          && request.resource.data.status == 'booked'
+          && request.resource.data.start == resource.data.start
+          && request.resource.data.end == resource.data.end
+          && resource.data.start > request.time);
+    }
+
+    match /appointments/{appointmentId} {
+      allow read: if signedIn() && (resource.data.patientId == request.auth.uid || isPsychologist());
+      allow create: if signedIn()
+        && request.resource.data.patientId == request.auth.uid
+        && request.resource.data.status == 'confirmed'
+        && getAfter(/databases/$(database)/documents/slots/$(appointmentId)).data.status == 'booked';
+      allow update, delete: if isPsychologist();
+    }
+  }
+}

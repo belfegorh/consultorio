@@ -1,0 +1,76 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Alma · Consultorio</ion-title>
+    @if (user) { <ion-buttons slot="end"><ion-button (click)="auth.logout()">Salir</ion-button></ion-buttons> }
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (loading) {
+    <div class="center-state"><ion-spinner name="crescent"></ion-spinner></div>
+  } @else if (!user) {
+    <section class="login-shell">
+      <div class="welcome-card">
+        <div class="mark">A</div>
+        <p class="eyebrow">Tu espacio, a tu tiempo</p>
+        <h1>Agenda un momento para ti</h1>
+        <p>Consulta la disponibilidad del consultorio y reserva una sesión de 90 minutos con tranquilidad.</p>
+        <ion-button expand="block" size="large" (click)="login()"><ion-icon slot="start" name="logo-google"></ion-icon>Continuar con Google</ion-button>
+        <small>Solo usaremos tus datos para gestionar tus citas.</small>
+      </div>
+    </section>
+  } @else {
+    <main class="app-shell">
+      <section class="intro">
+        <div>
+          <p class="eyebrow">{{ user.role === 'psychologist' ? 'Panel profesional' : 'Agenda en línea' }}</p>
+          <h1>Hola, {{ user.displayName.split(' ')[0] }}</h1>
+          <p>{{ user.role === 'psychologist' ? 'Organiza los espacios disponibles para tus pacientes.' : 'Elige un día y reserva el horario que mejor se adapte a ti.' }}</p>
+        </div>
+        @if (user.photoURL) { <img [src]="user.photoURL" alt="Foto del usuario" referrerpolicy="no-referrer"> }
+      </section>
+
+      <div class="workspace">
+        <section class="calendar-card">
+          <div class="calendar-heading">
+            <ion-button fill="clear" aria-label="Mes anterior" (click)="previousMonth()"><ion-icon name="chevron-back"></ion-icon></ion-button>
+            <h2>{{ monthTitle() }}</h2>
+            <ion-button fill="clear" aria-label="Mes siguiente" (click)="nextMonth()"><ion-icon name="chevron-forward"></ion-icon></ion-button>
+          </div>
+          <div class="calendar-grid weekdays">@for (weekday of weekdays; track weekday) { <span>{{ weekday }}</span> }</div>
+          <div class="calendar-grid days">
+            @for (day of days; track day.date.getTime()) {
+              <button type="button" [class.outside]="!day.inCurrentMonth" [class.today]="day.isToday" [class.selected]="isSelected(day)" [disabled]="!day.inCurrentMonth" (click)="selectDay(day)">
+                <span>{{ day.dayNumber }}</span>@if (day.hasAvailability) { <i aria-label="Tiene disponibilidad"></i> }
+              </button>
+            }
+          </div>
+        </section>
+
+        <section class="slots-card">
+          <div class="section-heading"><p class="eyebrow">{{ shortDate(selectedDate) }}</p><h2>{{ user.role === 'psychologist' ? 'Agenda del día' : 'Horarios disponibles' }}</h2></div>
+          @if (user.role === 'patient') {
+            @if (availableSlotsForSelectedDate().length) {
+              <div class="slot-list">
+                @for (slot of availableSlotsForSelectedDate(); track slot.id) {
+                  <button class="slot" type="button" [disabled]="busy" (click)="confirmBooking(slot)"><span>{{ time(slot.start.toDate()) }}</span><small>hasta {{ time(slot.end.toDate()) }}</small><ion-icon name="arrow-forward"></ion-icon></button>
+                }
+              </div>
+            } @else { <div class="empty"><ion-icon name="calendar-clear-outline"></ion-icon><p>No hay horarios disponibles para este día.</p></div> }
+          } @else {
+            <form class="availability-form" (ngSubmit)="addAvailability()">
+              <ion-input label="Fecha" labelPlacement="stacked" type="date" name="date" [(ngModel)]="availability.date" required></ion-input>
+              <div class="time-fields"><ion-input label="Desde" labelPlacement="stacked" type="time" name="from" [(ngModel)]="availability.from" required></ion-input><ion-input label="Hasta" labelPlacement="stacked" type="time" name="to" [(ngModel)]="availability.to" required></ion-input></div>
+              <ion-button expand="block" type="submit" [disabled]="busy">Publicar bloques de 90 minutos</ion-button>
+            </form>
+            <div class="slot-list professional">
+              @for (slot of slotsForSelectedDate(); track slot.id) {
+                <div class="slot" [class.booked]="slot.status === 'booked'"><span>{{ time(slot.start.toDate()) }}</span><small>{{ slot.status === 'booked' ? 'Reservado' : 'Disponible' }}</small>@if (slot.status === 'available') { <ion-button fill="clear" color="danger" aria-label="Eliminar horario" (click)="removeSlot(slot)"><ion-icon name="trash-outline"></ion-icon></ion-button> }</div>
+              } @empty { <div class="empty compact"><p>No hay bloques configurados.</p></div> }
+            </div>
+          }
+        </section>
+      </div>
+    </main>
+  }
+</ion-content>
